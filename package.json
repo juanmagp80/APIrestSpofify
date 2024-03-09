@@ -4,7 +4,8 @@
   "description": "API RESTful creada con Node, Express, MongoDB, JWT etc para una app musical tipo Spotify",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "author": "Juanma Garrido",
   "license": "MIT",
