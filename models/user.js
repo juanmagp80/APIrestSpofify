@@ -16,6 +16,7 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true,
+    select: true,
   },
   nick: {
     type: String,
@@ -24,6 +25,7 @@ const userSchema = new Schema({
   role: {
     type: String,
     default: "user",
+    select: false,
   },
   image: {
     type: String,
@@ -40,10 +42,6 @@ const userSchema = new Schema({
   deleted_at: {
     type: Date,
     default: null,
-  },
-  status: {
-    type: Boolean,
-    default: true,
   },
 });
 
