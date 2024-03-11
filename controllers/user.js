@@ -189,9 +189,47 @@ const getProfile = async (req, res) => {
   }
 };
 
+//metodo para actualizar usuario
+
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { name, lastname, email, password, nick, role, image } = req.body;
+
+  try {
+    const updateUser = await User.findByIdAndUpdate(
+      id,
+      {
+        name,
+        lastname,
+        email,
+        password,
+        nick,
+        role,
+        image,
+        updated_at: Date.now(),
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ message: "Error al actualizar el usuario", error });
+  }
+  return res.status(200).send({
+    message: "Usuario actualizado",
+    status: 200,
+    user: updatedUser,
+  });
+};
+
 module.exports = {
   prueba,
   register,
   login,
   getProfile,
+  updateUser,
 };

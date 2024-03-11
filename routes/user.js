@@ -14,6 +14,7 @@ router.get("/prueba", userController.prueba);
 router.post("/register", userController.register);
 router.post("/login", userController.login);
 router.get("/getprofile/:id", check, userController.getProfile);
+router.put("/updateuser/:id", check, userController.updateUser);
 
 //exportar rutas
 module.exports = router;
