@@ -28,7 +28,7 @@ router.get("/list/:page?", check, artistController.list);
 router.put("/update/:id", check, artistController.update);
 router.delete("/remove/:id", check, artistController.remove);
 router.post(
-  "/upload",
+  "/upload/:id",
   check,
   upload.single("archivo"),
   artistController.upload

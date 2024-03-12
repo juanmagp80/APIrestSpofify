@@ -1,5 +1,9 @@
 const { __esModule } = require("validator/lib/isFloat");
+const Album = require("../models/album");
+const Song = require("../models/song");
+
 const Artist = require("../models/artist");
+const fs = require("fs");
 
 const prueba = (req, res) => {
   return res.status(200).send({
@@ -117,6 +121,9 @@ const remove = async (req, res) => {
 
   try {
     const artist = await Artist.findById(artistId);
+    const artistRemoved = await Artist.findByIdAndRemove(artistId);
+    const albumsRemoved = await Album.find({ artist: artistId }).remove();
+    const songsRemoved = await Song.find({ album: albumsRemoved._id }).remove();
 
     if (!artist) {
       return res.status(404).send({
@@ -129,6 +136,9 @@ const remove = async (req, res) => {
 
     return res.status(200).send({
       message: "Artista eliminado correctamente",
+      artist: artistRemoved,
+      albums: albumsRemoved,
+      songs: songsRemoved,
     });
   } catch (err) {
     console.error(err);
@@ -139,72 +149,52 @@ const remove = async (req, res) => {
     });
   }
 };
+const path = require("path");
+
+// ... tus otros controladores ...
+
 const upload = async (req, res) => {
-  console.log(req.file);
+  // Asegúrate de que se subió un archivo
   if (!req.file) {
+    console.log(req.file);
     return res.status(400).send({
       message: "No se ha subido ningun archivo",
       status: 400,
     });
   }
 
-  // configuracion de subida (multer )
+  // Comprueba la extensión del archivo
+  const validExtensions = ["png", "jpg", "jpeg"];
+  const extension = path
+    .extname(req.file.originalname)
+    .toLowerCase()
+    .substring(1);
 
-  //recoger fichero de imagen y compronbar que existe
-
-  //conseguir el nombre de archivo
-  let image = req.file.originalname;
-  const imageSplit = image.split(".");
-  const extension = imageSplit[1];
-
-  if (extension !== "png" && extension !== "jpg" && extension !== "jpeg") {
-    const filePath = req.file.path;
-
-    try {
-      fs.unlinkSync(filePath);
-    } catch (err) {
-      return res.status(500).send({
-        message: "error al borrar el archivo",
-        status: 500,
-      });
-    }
+  if (!validExtensions.includes(extension)) {
     return res.status(400).send({
-      message: "extension no valida",
+      message: "Formato de archivo no soportado",
       status: 400,
     });
   }
-  //devolver respuesta
-  Artist.findOneAndUpdate(
-    if (req.artist) {
-      let id = req.artist.id;
-    { _id: req.artist.id },
-    { image: req.file.filename },
-    { new: true }
-    } else {
-      console.error('Artist no está definido');
-}
-}}
 
-  )
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({
-          message: "Usuario no encontrado",
-          status: 404,
-        });
-      }
-      res.status(200).send({
-        message: "Avatar actualizado correctamente",
-        status: 200,
-      });
-    })
-    .catch((err) => {
-      return res.status(500).send({
-        message: "Error al actualizar el avatar",
-        status: 500,
-      });
+  // Aquí puedes agregar el código para asociar la imagen con un artista en tu base de datos
+  const artist = await Artist.findById(req.params.id);
+  if (!artist) {
+    return res.status(404).send({
+      message: "Artista no encontrado",
+      status: 404,
     });
+  }
+  artist.image = req.file.path;
+  await artist.save();
 
+  res.status(200).send({
+    message: "Imagen subida correctamente",
+    status: 200,
+  });
+};
+
+// ... tus otros controladores ...
 
 const avatar = (req, res) => {
   const file = req.params.file;
