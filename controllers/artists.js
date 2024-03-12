@@ -139,6 +139,88 @@ const remove = async (req, res) => {
     });
   }
 };
+const upload = async (req, res) => {
+  console.log(req.file);
+  if (!req.file) {
+    return res.status(400).send({
+      message: "No se ha subido ningun archivo",
+      status: 400,
+    });
+  }
+
+  // configuracion de subida (multer )
+
+  //recoger fichero de imagen y compronbar que existe
+
+  //conseguir el nombre de archivo
+  let image = req.file.originalname;
+  const imageSplit = image.split(".");
+  const extension = imageSplit[1];
+
+  if (extension !== "png" && extension !== "jpg" && extension !== "jpeg") {
+    const filePath = req.file.path;
+
+    try {
+      fs.unlinkSync(filePath);
+    } catch (err) {
+      return res.status(500).send({
+        message: "error al borrar el archivo",
+        status: 500,
+      });
+    }
+    return res.status(400).send({
+      message: "extension no valida",
+      status: 400,
+    });
+  }
+  //devolver respuesta
+  Artist.findOneAndUpdate(
+    if (req.artist) {
+      let id = req.artist.id;
+    { _id: req.artist.id },
+    { image: req.file.filename },
+    { new: true }
+    } else {
+      console.error('Artist no está definido');
+}
+}}
+
+  )
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({
+          message: "Usuario no encontrado",
+          status: 404,
+        });
+      }
+      res.status(200).send({
+        message: "Avatar actualizado correctamente",
+        status: 200,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).send({
+        message: "Error al actualizar el avatar",
+        status: 500,
+      });
+    });
+
+
+const avatar = (req, res) => {
+  const file = req.params.file;
+  const filePath = "./uploads/artists/" + file;
+
+  fs.stat(filePath, (err, exists) => {
+    if (err || !exists) {
+      return res.status(404).send({
+        message: "El avatar no existe",
+        status: 404,
+      });
+    }
+    return res.sendFile(path.resolve(filePath));
+  });
+};
+
 module.exports = {
   prueba,
   save,
@@ -146,4 +228,6 @@ module.exports = {
   list,
   update,
   remove,
+  upload,
+  avatar,
 };
